@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Can My PC Run It?</title>
+
+<style>
+  body {
+    background: #0f172a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  input, button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 6px;
+    border: none;
+  }
+  button {
+    background: #22c55e;
+    cursor: pointer;
+  }
+  .games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .card {
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  img {
+    width: 100%;
+    border-radius: 8px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🖥️ Can My PC Run This?</h1>
+
+<input id="cpu" placeholder="CPU (e.g. i5 8th gen)">
+<input id="gpu" placeholder="GPU (e.g. GTX 1050)">
+<input id="ram" type="number" placeholder="RAM (GB)">
+<br>
+<button onclick="recommend()">Recommend Games</button>
+
+<div class="games" id="games"></div>
+
+<script>
+const API_KEY = "YOUR_RAWG_API_KEY"; // put your key here
+
+function recommend() {
+  const ram = document.getElementById("ram").value;
+  let tag = "indie";
+
+  if (ram < 8) tag = "pixel";
+  else if (ram < 16) tag = "action";
+  else tag = "open-world";
+
+  fetch(`https://api.rawg.io/api/games?key=${API_KEY}&tags=${tag}&page_size=8`)
+    .then(res => res.json())
+    .then(data => {
+      const gamesDiv = document.getElementById("games");
+      gamesDiv.innerHTML = "";
+
+      data.results.forEach(game => {
+        gamesDiv.innerHTML += `
+          <div class="card">
+            <img src="${game.background_image}">
+            <h4>${game.name}</h4>
+            <small>⭐ ${game.rating}</small>
+          </div>
+        `;
+      });
+    });
+}
+</script>
+
+</body>
+</html>
