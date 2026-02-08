@@ -68,17 +68,27 @@ function recommend() {
       const gamesDiv = document.getElementById("games");
       gamesDiv.innerHTML = "";
 
+      if (!data.results || data.results.length === 0) {
+        gamesDiv.innerHTML = "<p>No games found 😢</p>";
+        return;
+      }
+
       data.results.forEach(game => {
         gamesDiv.innerHTML += `
           <div class="card">
-            <img src="${game.background_image}">
+            <img src="${game.background_image || ''}">
             <h4>${game.name}</h4>
             <small>⭐ ${game.rating}</small>
           </div>
         `;
       });
+    })
+    .catch(err => {
+      document.getElementById("games").innerHTML = "<p>Error fetching games 😢 Check your API key</p>";
+      console.error(err);
     });
 }
+
 </script>
 
 </body>
