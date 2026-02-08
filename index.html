@@ -31,10 +31,21 @@
     background: #1e293b;
     border-radius: 10px;
     padding: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .card:hover {
+    transform: scale(1.05);
   }
   img {
     width: 100%;
     border-radius: 8px;
+  }
+  .game-info {
+    margin-top: 20px;
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 15px;
   }
 </style>
 </head>
@@ -50,6 +61,8 @@
 <button onclick="recommend()">Recommend Games</button>
 
 <div class="games" id="games"></div>
+
+<div class="game-info" id="gameInfo" style="display:none;"></div>
 
 <script>
 const API_KEY = "YO61ab5c751b5549c1a39dbeafa4c0cd8c"; // put your key here
@@ -67,6 +80,9 @@ function recommend() {
     .then(data => {
       const gamesDiv = document.getElementById("games");
       gamesDiv.innerHTML = "";
+      const gameInfoDiv = document.getElementById("gameInfo");
+      gameInfoDiv.style.display = "none";
+      gameInfoDiv.innerHTML = "";
 
       if (!data.results || data.results.length === 0) {
         gamesDiv.innerHTML = "<p>No games found 😢</p>";
@@ -74,13 +90,30 @@ function recommend() {
       }
 
       data.results.forEach(game => {
-        gamesDiv.innerHTML += `
-          <div class="card">
-            <img src="${game.background_image || ''}">
-            <h4>${game.name}</h4>
-            <small>⭐ ${game.rating}</small>
-          </div>
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${game.background_image || ''}">
+          <h4>${game.name}</h4>
+          <small>⭐ ${game.rating}</small>
         `;
+
+        // Click event to show game info
+        card.addEventListener("click", () => {
+          gameInfoDiv.style.display = "block";
+          gameInfoDiv.innerHTML = `
+            <h2>${game.name}</h2>
+            <img src="${game.background_image || ''}" style="width:100%; max-width:400px; border-radius:8px;">
+            <p>⭐ Rating: ${game.rating}</p>
+            <p>Released: ${game.released}</p>
+            <p>Platforms: ${game.platforms.map(p => p.platform.name).join(", ")}</p>
+            <p>Genres: ${game.genres.map(g => g.name).join(", ")}</p>
+          `;
+          // Scroll to game info
+          gameInfoDiv.scrollIntoView({ behavior: "smooth" });
+        });
+
+        gamesDiv.appendChild(card);
       });
     })
     .catch(err => {
@@ -88,7 +121,6 @@ function recommend() {
       console.error(err);
     });
 }
-
 </script>
 
 </body>
